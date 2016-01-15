@@ -1,29 +1,51 @@
 # command line calculator
 
-puts "Enter first number"
-a = gets.chomp.to_i
-
-puts "Enter second number"
-b = gets.chomp.to_i
-
-puts "Select an operator (*, /, +, -)"
-op = gets.chomp
-
-result = if op == "*"
-           a * b
-         elsif op == "/"
-           a / b.to_f
-         elsif op == "+"
-           a + b
-         elsif op == "-"
-           a - b
-         else
-           "error"
-         end
-
-if op != "error"
-  puts "#{a.to_s + op + b.to_s} + '=' + #{result}"
-else
-  puts "an error occurred"
+def prompt(message)
+  puts "=> #{message}"
 end
 
+def valid_input?(input, type)
+  if type == :num
+    # small issue input = '1asdf' will validate as '1asdf'.to_i = 1
+    input == '0' || input.to_i != 0
+  else
+    input =~ /^[-+*\/]$/ # one character in the accepted operators
+  end
+end
+
+def get_input(message, type)
+  prompt(message)
+  loop do
+    input = gets.chomp
+    if valid_input?(input, type)
+      return type == :num ? input.to_f : input
+    else
+      prompt('Not a valid input. Try again')
+    end
+  end
+end
+
+a  = get_input('Enter first number', :num)
+b  = get_input('Enter second number', :num)
+op = get_input('Select an operator (*, /, +, -)', :op)
+
+result =  case op
+          when '*'
+            a * b
+          when '/'
+            if b == 0.0
+              'Divide by zero error'
+            else
+              a.to_f / b.to_f
+            end
+          when '+'
+            a + b
+          when '-'
+            a - b
+          end
+
+if result != 'Divide by zero error'
+  prompt("#{a.to_s + op + b.to_s} = #{result}")
+else
+  prompt(result)
+end

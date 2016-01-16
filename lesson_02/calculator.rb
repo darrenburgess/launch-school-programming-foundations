@@ -26,15 +26,10 @@ def get_input(message, type)
 end
 
 def get_result(a, b, op)
-  case op
-  when '*'
-    a * b
-  when '/'
+  if op == '+' || op == '-' || op == '*'
+    eval("#{a} #{op} #{b}")
+  else
     b == 0.0 ? 'Divide by zero error' : a.to_f / b.to_f
-  when '+'
-    a + b
-  when '-'
-    a - b
   end
 end
 

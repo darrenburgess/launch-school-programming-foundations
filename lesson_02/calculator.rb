@@ -7,7 +7,7 @@ end
 def valid_input?(input, type)
   if type == :num
     # small issue input = '1asdf' will validate as '1asdf'.to_i = 1
-    input == '0' || input.to_i != 0
+    input == '0' || input =='0.0' || input.to_i != 0
   else
     input =~ /^[-+*\/]$/ # one character in the accepted operators
   end

@@ -30,11 +30,7 @@ def get_result(a, b, op)
   when '*'
     a * b
   when '/'
-    if b == 0.0
-      'Divide by zero error'
-    else
-      a.to_f / b.to_f
-    end
+    b == 0.0 ? 'Divide by zero error' : a.to_f / b.to_f
   when '+'
     a + b
   when '-'

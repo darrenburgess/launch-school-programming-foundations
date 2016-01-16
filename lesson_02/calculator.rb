@@ -1,5 +1,8 @@
 # command line calculator
 
+require 'yaml'
+MESSAGES = YAML.load_file('calculator_messages.yml')
+
 def prompt(message)
   puts "=> #{message}"
 end
@@ -7,7 +10,7 @@ end
 def valid_input?(input, type)
   if type == :num
     # small issue input = '1asdf' will validate as '1asdf'.to_i = 1
-    input == '0' || input =='0.0' || input.to_i != 0
+    input == '0' || input == '0.0' || input.to_i != 0
   else
     input =~ /^[-+*\/]$/ # one character in the accepted operators
   end
@@ -20,23 +23,23 @@ def get_input(message, type)
     if valid_input?(input, type)
       return type == :num ? input.to_f : input
     else
-      prompt('Not a valid input. Try again')
+      prompt(MESSAGES['invalid_input'])
     end
   end
 end
 
 def get_result(a, b, op)
   if op == '+' || op == '-' || op == '*'
-    eval("#{a} #{op} #{b}")
+    eval("#{a} #{op} #{b}") # yes, eval is evil
   else
     b == 0.0 ? 'Divide by zero error' : a.to_f / b.to_f
   end
 end
 
 loop do
-  a      = get_input('Enter first number', :num)
-  b      = get_input('Enter second number', :num)
-  op     = get_input('Select an operator (*, /, +, -)', :op)
+  a      = get_input(MESSAGES['input_first_number'], :num)
+  b      = get_input(MESSAGES['input_second_number'], :num)
+  op     = get_input(MESSAGES['input_operator'], :op)
   result = get_result(a, b, op)
 
   if result != 'Divide by zero error'
@@ -45,7 +48,7 @@ loop do
     prompt(result)
   end
 
-  prompt('Calculate again? Y or N')
+  prompt(MESSAGES['calculate_again'])
   answer = gets.chomp
   break unless answer.downcase.start_with?('y')
 end

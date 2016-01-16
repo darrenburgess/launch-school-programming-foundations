@@ -1,0 +1,7 @@
+# calculator_messages.yml
+
+invalid_input:        "Not a valid input. Try again"
+input_first_number:   "Enter first number"
+input_second_number:  "Enter second number"
+input_operator:       "Select an operator (*, /, +, -)"
+calculate_again:      "Calculate again? Y or N"

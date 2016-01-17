@@ -1,0 +1,7 @@
+# mortgage_calculator.yml
+
+invalid_input:    "Your input was invalid"
+loan_amount:      "Enter the loan amount"
+annual_rate:      "Enter the annual rate (eg 5.5)" 
+loan_duration:    "Enter the loan duration in years"
+calculate_again:  "Calculate again?"

@@ -29,19 +29,20 @@ def get_input(message, type)
 end
 
 loop do
-  loan_amount    = get_input(MESSAGES['loan_amount'], :integer)
-  annual_rate    = get_input(MESSAGES['annual_rate'], :float)
-  duration_years = get_input(MESSAGES['loan_duration'], :integer)
+  loan_amount     = get_input(MESSAGES['loan_amount'], :integer).to_f
+  annual_rate     = get_input(MESSAGES['annual_rate'], :float).to_f
+  duration_years  = get_input(MESSAGES['loan_duration'], :integer).to_f
+  duration_months = duration_years * 12
+  monthly_rate    = annual_rate.to_f / 100 / 12
 
   # P = L[c(1 + c)n]/[(1 + c)n - 1]
   # L = Loan amount
   # n = number of months
   # c = monthly interest rate
-  c = annual_rate.to_f / 100 / 12
-  a = loan_amount.to_f
-  n = duration_years.to_f * 12
 
-  monthly_payment = a * (c * (1 + c)** n) / ((1 + c)** n - 1)
+  monthly_payment = loan_amount *
+                    (monthly_rate * (1 + monthly_rate)** duration_months) /
+                    ((1 + monthly_rate)** duration_months - 1)
 
   puts "Your monthly payment is #{format('%02.2f', monthly_payment)}"
 

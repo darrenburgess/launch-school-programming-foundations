@@ -38,10 +38,10 @@ loop do
   # n = number of months
   # c = monthly interest rate
   c = annual_rate.to_f / 100 / 12
-  l = loan_amount.to_f
+  a = loan_amount.to_f
   n = duration_years.to_f * 12
 
-  monthly_payment = l * (c * (1 + c)** n) / ((1 + c)** n - 1)
+  monthly_payment = a * (c * (1 + c)** n) / ((1 + c)** n - 1)
 
   puts "Your monthly payment is #{format('%02.2f', monthly_payment)}"
 

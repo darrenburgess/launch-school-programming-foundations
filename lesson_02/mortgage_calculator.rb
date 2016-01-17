@@ -15,7 +15,7 @@ def valid_float?(input)
   valid_integer?(input) || (input.to_f.to_s == input && input.to_f > 0)
 end
 
-def get_input(message, type)
+def get_number_input(message, type)
   prompt(message)
   loop do
     input = gets.chomp
@@ -28,10 +28,16 @@ def get_input(message, type)
   end
 end
 
+def calculate_again?
+  prompt(MESSAGES['calculate_again'])
+  answer = gets.chom
+  answer.downcase.start_with?('y')
+end
+
 loop do
-  loan_amount     = get_input(MESSAGES['loan_amount'], :integer).to_f
-  annual_rate     = get_input(MESSAGES['annual_rate'], :float).to_f
-  duration_years  = get_input(MESSAGES['loan_duration'], :integer).to_f
+  loan_amount     = get_number_input(MESSAGES['loan_amount'], :integer).to_f
+  annual_rate     = get_number_input(MESSAGES['annual_rate'], :float).to_f
+  duration_years  = get_number_input(MESSAGES['loan_duration'], :integer).to_f
   duration_months = duration_years * 12
   monthly_rate    = annual_rate.to_f / 100 / 12
 
@@ -46,7 +52,5 @@ loop do
 
   puts "Your monthly payment is #{format('%02.2f', monthly_payment)}"
 
-  prompt(MESSAGES['calculate_again'])
-  answer = gets.chomp
-  break unless answer.downcase.start_with?('y')
+  break unless calculate_again?
 end

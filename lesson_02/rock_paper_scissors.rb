@@ -3,26 +3,33 @@
 # http://umop.com/rps.htm
 # http://readysteadycode.com/howto-scrape-websites-with-ruby-and-mechanize
 
-GAME_RULES = { rock:     { scissors: 'crushes',
-                           lizard:   'crushes' },
-               paper:    { rock:     'covers',
-                           spock:    'disproves' },
-               scissors: { paper:    'cuts',
-                           lizard:   'decapitates' },
-               lizard:   { paper:    'eats',
-                           spock:    'poisons' },
-               spock:    { rock:     'vaporizes',
-                           scissors: 'smashes' }
-            }.freeze
+GAME_RULES = {
+  rock: {
+    scissors: 'crushes',
+    lizard: 'crushes' },
+  paper: {
+    rock: 'covers',
+    spock: 'disproves' },
+  scissors: {
+    paper: 'cuts',
+    lizard: 'decapitates' },
+  lizard: {
+    paper: 'eats',
+    spock: 'poisons' },
+  spock: {
+    rock: 'vaporizes',
+    scissors: 'smashes'
+  }
+}.freeze
 
-VALID_CHOICES = GAME_RULES.keys.join(',').split(',')
+VALID_CHOICES = GAME_RULES.keys.map(&:to_s)
 
 def prompt(message)
   puts "=> #{message}"
 end
 
 def clear_screen
-  puts "\n" * 60
+  system 'clear'
 end
 
 def valid_choice?(choice)
@@ -30,7 +37,7 @@ def valid_choice?(choice)
 end
 
 def list_choices
-  GAME_RULES.keys.join(', ')
+  VALID_CHOICES.join(', ')
 end
 
 def input_player_choice
@@ -42,9 +49,7 @@ def input_player_choice
 end
 
 def pause_play
-  loop do
-    break if gets 
-  end
+  gets
 end
 
 def win?(first, second)
@@ -69,7 +74,7 @@ loop do
   player_choice = input_player_choice
   break if player_choice == 'exit'
   computer_choice = VALID_CHOICES.sample
-  puts determine_winner(player_choice, computer_choice) + "(enter to continue)"
+  puts "#{determine_winner(player_choice, computer_choice)} (enter to continue)"
   pause_play
   clear_screen
 end

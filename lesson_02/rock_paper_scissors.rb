@@ -2,6 +2,19 @@
 
 VALID_CHOICES = %w(rock paper scissors).freeze
 
+GAME_RULES = { rock:     { scissors: 'crushes',
+                           lizard: 'crushes'},
+               paper:    { rock: 'covers',
+                           spock: 'disproves'},
+               scissors: { paper: 'cuts',
+                           lizard: 'decapitates'},
+               lizard:   { paper: 'eats',
+                           spock: 'poisons'},
+               spock:    { rock: 'vaporizes',
+                           scissors: 'smashes'}
+              }
+
+
 def prompt(message)
   puts "=> #{message}"
 end

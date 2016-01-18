@@ -7,7 +7,7 @@ def prompt(message)
 end
 
 def valid_choice?(choice)
-  VALID_CHOICES.include?(choice)
+  VALID_CHOICES.include?(choice) || choice == 'exit'
 end
 
 def list_choices
@@ -16,29 +16,22 @@ end
 
 def input_player_choice
   loop do
-    prompt("#{list_choices} GO!")
     choice = gets.chomp
     return choice if valid_choice?(choice)
     prompt("Choose #{list_choices}")
   end
 end
 
-def play_again?
-  prompt('Play again?')
-  answer = gets.chomp
-  answer.downcase.start_with?('y')
-end
-
 def win?(first, second)
- (first == 'scissors' && second == 'paper') ||
- (first == 'rock'     && second == 'scissors') ||
- (first == 'paper'    && second == 'rock')
+  (first   == 'scissors' && second == 'paper') ||
+    (first == 'rock'     && second == 'scissors') ||
+    (first == 'paper'    && second == 'rock')
 end
 
 def display_winner(player, computer)
   if win?(player, computer)
     prompt("You win: #{player} beats #{computer}")
-  elsif win?(computer, player) 
+  elsif win?(computer, player)
     prompt("Computer wins: #{computer} beats #{player}")
   else
     prompt("Tie!")
@@ -48,9 +41,9 @@ end
 prompt("Welcome to #{list_choices}. You know what to do!")
 
 loop do
-  prompt("Make a choice:")
+  prompt("#{list_choices} GO!('exit' to stop)")
   player_choice = input_player_choice
+  break if player_choice == 'exit'
   computer_choice = VALID_CHOICES.sample
   display_winner(player_choice, computer_choice)
-  break unless play_again?
 end

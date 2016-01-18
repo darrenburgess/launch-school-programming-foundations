@@ -1,4 +1,7 @@
 # rock_paper_scissors.rb
+# next: scrape rps 101 and build on config file with different versions
+# http://umop.com/rps.htm
+# http://readysteadycode.com/howto-scrape-websites-with-ruby-and-mechanize
 
 GAME_RULES = { rock:     { scissors: 'crushes',
                            lizard:   'crushes' },

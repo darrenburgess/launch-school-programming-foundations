@@ -1,19 +1,18 @@
 # rock_paper_scissors.rb
 
-VALID_CHOICES = %w(rock paper scissors).freeze
-
 GAME_RULES = { rock:     { scissors: 'crushes',
-                           lizard: 'crushes'},
-               paper:    { rock: 'covers',
-                           spock: 'disproves'},
-               scissors: { paper: 'cuts',
-                           lizard: 'decapitates'},
-               lizard:   { paper: 'eats',
-                           spock: 'poisons'},
-               spock:    { rock: 'vaporizes',
-                           scissors: 'smashes'}
-              }
+                           lizard:   'crushes' },
+               paper:    { rock:     'covers',
+                           spock:    'disproves' },
+               scissors: { paper:    'cuts',
+                           lizard:   'decapitates' },
+               lizard:   { paper:    'eats',
+                           spock:    'poisons' },
+               spock:    { rock:     'vaporizes',
+                           scissors: 'smashes' }
+            }.freeze
 
+VALID_CHOICES = GAME_RULES.keys.join(',').split(',')
 
 def prompt(message)
   puts "=> #{message}"
@@ -24,7 +23,7 @@ def valid_choice?(choice)
 end
 
 def list_choices
-  VALID_CHOICES.join(', ')
+  GAME_RULES.keys.join(', ')
 end
 
 def input_player_choice
@@ -36,19 +35,17 @@ def input_player_choice
 end
 
 def win?(first, second)
-  (first   == 'scissors' && second == 'paper') ||
-    (first == 'rock'     && second == 'scissors') ||
-    (first == 'paper'    && second == 'rock')
+  GAME_RULES[first.to_sym][second.to_sym]
 end
 
-def display_winner(player, computer)
-  if win?(player, computer)
-    prompt("You win: #{player} beats #{computer}")
-  elsif win?(computer, player)
-    prompt("Computer wins: #{computer} beats #{player}")
-  else
-    prompt("Tie!")
-  end
+def determine_winner(player, computer)
+  win = win?(player, computer)
+  return "You win: #{player} #{win} #{computer}" if win
+
+  win = win?(computer, player)
+  return "Computer wins: #{computer} #{win} #{player}" if win
+
+  "Tie!"
 end
 
 prompt("Welcome to #{list_choices}. You know what to do!")
@@ -58,5 +55,5 @@ loop do
   player_choice = input_player_choice
   break if player_choice == 'exit'
   computer_choice = VALID_CHOICES.sample
-  display_winner(player_choice, computer_choice)
+  puts determine_winner(player_choice, computer_choice)
 end

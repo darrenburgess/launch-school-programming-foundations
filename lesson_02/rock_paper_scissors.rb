@@ -52,11 +52,11 @@ def win?(first, second)
 end
 
 def determine_winner(player, computer)
-  win = win?(player, computer)
-  return "You win: #{player} #{win} #{computer}" if win
+  action = win?(player, computer)
+  return "You win: #{player} #{action} #{computer}" if action
 
-  win = win?(computer, player)
-  return "Computer wins: #{computer} #{win} #{player}" if win
+  action = win?(computer, player)
+  return "Computer wins: #{computer} #{action} #{player}" if action
 
   "Tie!"
 end

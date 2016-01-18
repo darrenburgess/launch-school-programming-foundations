@@ -18,6 +18,10 @@ def prompt(message)
   puts "=> #{message}"
 end
 
+def clear_screen
+  puts "\n" * 60
+end
+
 def valid_choice?(choice)
   VALID_CHOICES.include?(choice) || choice == 'exit'
 end
@@ -31,6 +35,12 @@ def input_player_choice
     choice = gets.chomp
     return choice if valid_choice?(choice)
     prompt("Choose #{list_choices}")
+  end
+end
+
+def pause_play
+  loop do
+    break if gets 
   end
 end
 
@@ -48,6 +58,7 @@ def determine_winner(player, computer)
   "Tie!"
 end
 
+clear_screen
 prompt("Welcome to #{list_choices}. You know what to do!")
 
 loop do
@@ -55,5 +66,7 @@ loop do
   player_choice = input_player_choice
   break if player_choice == 'exit'
   computer_choice = VALID_CHOICES.sample
-  puts determine_winner(player_choice, computer_choice)
+  puts determine_winner(player_choice, computer_choice) + "(enter to continue)"
+  pause_play
+  clear_screen
 end

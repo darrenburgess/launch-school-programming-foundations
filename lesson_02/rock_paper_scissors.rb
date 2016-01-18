@@ -29,20 +29,19 @@ def play_again?
   answer.downcase.start_with?('y')
 end
 
+def win?(first, second)
+ (first == 'scissors' && second == 'paper') ||
+ (first == 'rock'     && second == 'scissors') ||
+ (first == 'paper'    && second == 'rock')
+end
+
 def display_winner(player, computer)
-  scissors = 'scissors'
-  rock = 'rock'
-  paper = 'paper'
-  if    (player == scissors && computer == paper) ||
-        (player == rock     && computer == scissors) ||
-        (player == paper    && computer == rock)
+  if win?(player, computer)
     prompt("You win: #{player} beats #{computer}")
-  elsif (computer == scissors && player == paper) ||
-        (computer == rock     && player == scissors) ||
-        (computer == paper    && player == rock)
+  elsif win?(computer, player) 
     prompt("Computer wins: #{computer} beats #{player}")
   else
-    prompt("Tie")
+    prompt("Tie!")
   end
 end
 

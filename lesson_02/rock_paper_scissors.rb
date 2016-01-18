@@ -32,7 +32,7 @@ end
 
 def input_player_choice
   loop do
-    choice = gets.chomp
+    choice = gets.chomp.downcase
     return choice if valid_choice?(choice)
     prompt("Choose #{list_choices}")
   end

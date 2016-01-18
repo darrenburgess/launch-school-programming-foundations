@@ -30,11 +30,11 @@ end
 
 def calculate_again?
   prompt(MESSAGES['calculate_again'])
-  answer = gets.chom
+  answer = gets.chomp
   answer.downcase.start_with?('y')
 end
 
-loop do
+def calculate_monthly_payment
   loan_amount     = get_number_input(MESSAGES['loan_amount'], :integer).to_f
   annual_rate     = get_number_input(MESSAGES['annual_rate'], :float).to_f
   duration_years  = get_number_input(MESSAGES['loan_duration'], :integer).to_f
@@ -42,15 +42,15 @@ loop do
   monthly_rate    = annual_rate.to_f / 100 / 12
 
   # P = L[c(1 + c)n]/[(1 + c)n - 1]
-  # L = Loan amount
-  # n = number of months
-  # c = monthly interest rate
+  # L = Loan amount; n = number of months; c = monthly interest rate
+  loan_amount * (monthly_rate * (1 + monthly_rate)** duration_months) /
+                ((1 + monthly_rate)** duration_months - 1)
+end
 
-  monthly_payment = loan_amount *
-                    (monthly_rate * (1 + monthly_rate)** duration_months) /
-                    ((1 + monthly_rate)** duration_months - 1)
+loop do
 
+  monthly_payment = calculate_monthly_payment
   puts "Your monthly payment is #{format('%02.2f', monthly_payment)}"
-
   break unless calculate_again?
+
 end

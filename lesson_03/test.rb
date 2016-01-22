@@ -1,11 +1,12 @@
-munsters = {
-  "Herman" => { "age" => 32, "gender" => "male" },
-  "Lily" => { "age" => 30, "gender" => "female" },
-  "Grandpa" => { "age" => 402, "gender" => "male" },
-  "Eddie" => { "age" => 10, "gender" => "male" },
-  "Marilyn" => { "age" => 23, "gender" => "female"}
-}
+def dot_separated_ip_address?(input_string)
+  dot_separated_words = input_string.split(".")
+  return false if dot_separated_words.size != 4
+  
+  dot_separated_words.each do |word|
+    return false if word.to_i.to_s != word
+  end
 
-munsters.each do |munster, details|
-  puts "#{munster} is a #{details["age"]} year old #{details["gender"]}"
+  return true
 end
+
+puts dot_separated_ip_address?("192.168.1.1")

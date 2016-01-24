@@ -7,6 +7,7 @@ COMPUTER_MARKER = "O".freeze
 WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] +
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] +
                 [[1, 5, 9], [3, 5, 7]].freeze
+WINNING_SCORE = 2
 
 def initialize_board
   { 1 => " ", 2 => " ", 3 => " ", 4 => " ", 5 => " ", 6 => " ", 7 => " ", 8 => " ", 9 => " " }
@@ -81,26 +82,57 @@ def determine_winner?(board, marker)
   false
 end
 
+def tally_score(winner, score)
+  score[winner.to_sym] += 1
+end
+
+def over_all_winner?(score)
+  return "player" if score[:player] == WINNING_SCORE
+  return "computer" if score[:computer] == WINNING_SCORE
+end
+
 def play_game(board)
   loop do
     display_board(board)
     player = player_choice(board)
     update_board(board, player, PLAYER_MARKER)
-    return "Player" if determine_winner?(board, PLAYER_MARKER)
+    return "player" if determine_winner?(board, PLAYER_MARKER)
 
     computer = computer_choice(board)
     update_board(board, computer, COMPUTER_MARKER)
     display_board(board)
-    return "Computer" if determine_winner?(board, COMPUTER_MARKER)
+    return "computer" if determine_winner?(board, COMPUTER_MARKER)
 
-    return "Nobody" if game_is_draw?(board)
+    return "nobody" if game_is_draw?(board)
   end
 end
+
+def reset_score
+  { player: 0, computer: 0 }
+end
+
+def determine_overall_winner(score)
+  over_all_winner = over_all_winner?(score)
+  if over_all_winner
+    prompt("#{over_all_winner.capitalize} wins the match!") if over_all_winner
+    reset_score
+  else
+    score
+  end
+end
+
+score = reset_score
 
 loop do
   board = initialize_board
   result = play_game(board)
   display_board(board)
-  prompt("#{result} won.  Play again? (y, n)")
+  
+  tally_score(result, score) unless result == "nobody"
+  prompt("#{result.capitalize} won. Player: #{score[:player]} Computer: #{score[:computer]}")
+  
+  score = determine_overall_winner(score)
+
+  prompt("Play again? (y, n)")
   break if gets.chomp.downcase.start_with?('n')
 end

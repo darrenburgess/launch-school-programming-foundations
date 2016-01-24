@@ -1,4 +1,4 @@
-# tic_tac_toe.rb
+# -*- immutable: string -*-
 
 require 'pry'
 
@@ -20,6 +20,7 @@ def clear_screen
   system 'clear'
 end
 
+# rubocop:disable Metrics/AbcSize
 def display_board(b)
   clear_screen
   puts "     |   |   "
@@ -34,6 +35,7 @@ def display_board(b)
   puts "   #{b[7]} | #{b[8]} | #{b[9]} "
   puts "     |   |   "
 end
+# rubocop:enable Metrics/AbcSize
 
 def update_board(board, choice, marker)
   board[choice.to_i] = marker
@@ -43,15 +45,24 @@ def remaining_choices(board)
   board.select { |_, v| v == " " }.keys
 end
 
+def joinor(array, delimiter, join_word = "or")
+  if array.length > 1
+    last_word = array.pop
+    "#{array.join(delimiter)} #{join_word} #{last_word}"
+  else
+    array.join('')
+  end
+end
+
 def display_choices(board)
-  remaining_choices(board).join(", ")
+  joinor(remaining_choices(board), ", ")
 end
 
 def player_choice(board)
   loop do
     puts "Make a choice: #{display_choices(board)}"
     choice = gets.chomp
-    return choice if display_choices(board).include?(choice)
+    return choice if remaining_choices(board).include?(choice.to_i)
   end
 end
 
@@ -63,10 +74,9 @@ def game_is_draw?(board)
   remaining_choices(board).empty?
 end
 
-def determine_winner?(board)
+def determine_winner?(board, marker)
   WINNING_LINES.each do |line|
-    next if board[line[0]] == ' ' || board[line[1]] == ' ' || board[line[2]] == ' '
-    return true if board[line[0]] == board[line[1]] && board[line[0]] == board[line[2]]
+    return true if board.values_at(*line).count(marker) == 3
   end
   false
 end
@@ -76,13 +86,12 @@ def play_game(board)
     display_board(board)
     player = player_choice(board)
     update_board(board, player, PLAYER_MARKER)
-    return "Player" if determine_winner?(board)
+    return "Player" if determine_winner?(board, PLAYER_MARKER)
 
     computer = computer_choice(board)
     update_board(board, computer, COMPUTER_MARKER)
-
     display_board(board)
-    return "Computer" if determine_winner?(board)
+    return "Computer" if determine_winner?(board, COMPUTER_MARKER)
 
     return "Nobody" if game_is_draw?(board)
   end

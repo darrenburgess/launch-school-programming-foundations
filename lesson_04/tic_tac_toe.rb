@@ -1,4 +1,4 @@
-# -*- immutable: string -*-
+# tic_tac_toe.rb
 
 require 'pry'
 
@@ -8,7 +8,7 @@ WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] +
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] +
                 [[1, 5, 9], [3, 5, 7]].freeze
 WINNING_SCORE = 5
-UNBEATABLE = false
+UNBEATABLE = true
 
 def initialize_board
   { 1 => " ", 2 => " ", 3 => " ", 4 => " ", 5 => " ", 6 => " ", 7 => " ", 8 => " ", 9 => " " }
@@ -79,9 +79,9 @@ def find_strategic_square(board, marker)
 end
 
 def computer_choice(board)
-  if !!find_strategic_square(board, COMPUTER_MARKER)
+  if find_strategic_square(board, COMPUTER_MARKER)
     find_strategic_square(board, COMPUTER_MARKER)
-  elsif !!find_strategic_square(board, PLAYER_MARKER)
+  elsif find_strategic_square(board, PLAYER_MARKER)
     find_strategic_square(board, PLAYER_MARKER)
   elsif board[5] == ' '
     5
@@ -107,9 +107,13 @@ def tally_score(winner, score)
   score[winner.to_sym] += 1
 end
 
-def over_all_winner?(score)
+def over_all_winner(score)
   return "player" if score[:player] == WINNING_SCORE
   return "computer" if score[:computer] == WINNING_SCORE
+end
+
+def reset_score
+  { player: 0, computer: 0 }
 end
 
 def play_game(board)
@@ -128,20 +132,6 @@ def play_game(board)
   end
 end
 
-def reset_score
-  { player: 0, computer: 0 }
-end
-
-def determine_overall_winner(score)
-  over_all_winner = over_all_winner?(score)
-  if over_all_winner
-    prompt("#{over_all_winner.capitalize} wins the match!") if over_all_winner
-    reset_score
-  else
-    score
-  end
-end
-
 score = reset_score
 
 loop do
@@ -152,7 +142,11 @@ loop do
   tally_score(result, score) unless result == "nobody"
   prompt("#{result.capitalize} won. Player: #{score[:player]} Computer: #{score[:computer]}")
 
-  score = determine_overall_winner(score)
+  winner = over_all_winner(score)
+  if winner
+    prompt("#{winner.capitalize} wins the match!")
+    score = reset_score
+  end
 
   prompt("Play again? (y, n)")
   break if gets.chomp.downcase.start_with?('n')

@@ -7,7 +7,8 @@ COMPUTER_MARKER = "O".freeze
 WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] +
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] +
                 [[1, 5, 9], [3, 5, 7]].freeze
-WINNING_SCORE = 2
+WINNING_SCORE = 5
+UNBEATABLE = false
 
 def initialize_board
   { 1 => " ", 2 => " ", 3 => " ", 4 => " ", 5 => " ", 6 => " ", 7 => " ", 8 => " ", 9 => " " }
@@ -67,8 +68,28 @@ def player_choice(board)
   end
 end
 
+def find_strategic_square(board, marker)
+  WINNING_LINES.each do |line|
+    if  board.values_at(*line).count(marker) == 2 &&
+        board.values_at(*line).include?(' ')
+      return line[board.values_at(*line).index(' ')]
+    end
+  end
+  false
+end
+
 def computer_choice(board)
-  remaining_choices(board).sample
+  if !!find_strategic_square(board, COMPUTER_MARKER)
+    find_strategic_square(board, COMPUTER_MARKER)
+  elsif !!find_strategic_square(board, PLAYER_MARKER)
+    find_strategic_square(board, PLAYER_MARKER)
+  elsif board[5] == ' '
+    5
+  elsif board[5] == 'X' && remaining_choices(board).length == 8 && UNBEATABLE
+    [1, 3, 7, 9].sample
+  else
+    remaining_choices(board).sample
+  end
 end
 
 def game_is_draw?(board)
@@ -127,10 +148,10 @@ loop do
   board = initialize_board
   result = play_game(board)
   display_board(board)
-  
+
   tally_score(result, score) unless result == "nobody"
   prompt("#{result.capitalize} won. Player: #{score[:player]} Computer: #{score[:computer]}")
-  
+
   score = determine_overall_winner(score)
 
   prompt("Play again? (y, n)")

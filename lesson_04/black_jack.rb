@@ -1,13 +1,8 @@
 # black_jack.rb
 
-# notes:
-# hands will be an object as such: { player: [card, card, etc]}
-# this will accomodate more than two players
-# 
-
 require 'pry'
 
-CARD_TYPES = [2, 3, 4, 5, 6, 7, 8, 9, 10] + 
+CARD_TYPES = ["2", "3", "4", "5", "6", "7", "8", "9", "10"] + 
              ["Jack", "Queen", "King", "Ace"]
 SUITS = ["Hearts", "Clubs", "Diamonds", "Spades"]
 
@@ -15,9 +10,13 @@ current_deck = []
 hide_dealer = true
 
 hands = {
-  Darren: [["Ace", "Spades"], ["Jack", "Spades"]],
-  Dealer: [["3", "Diamonds"], ["Queen", "Diamonds"]]
+  # Darren: [["Ace", "Spades"], ["Jack", "Spades"]],
+  # Dealer: [["3", "Diamonds"], ["Queen", "Diamonds"]]
 }
+
+def prompt(message)
+  puts "=> #{message}"
+end
 
 def display_cards(hands, hide_dealer)
   hands.each do |player, cards|
@@ -38,7 +37,7 @@ end
 def initialize_deck(deck)
   CARD_TYPES.each do |card_type|
     SUITS.each do |suit|
-      deck << "#{card_type} of #{suit}"
+      deck << [card_type, suit]
     end
   end
 end
@@ -54,17 +53,27 @@ def shuffle_deck(deck)
   new_deck
 end
 
-def prompt(message)
-  puts "=> #{message}"
-end
-
-
 def draw_card(deck)
   deck.pop
 end
 
+def deal_initial_hands(deck, hands)
+  [:Player, :Dealer].each do |player|
+    hands[player] = []
+    2.times do |t|
+      binding.pry
+      hands[player] += [draw_card(deck)]
+    end
+  end
+end
+
+def player_hit(hands, player, deck)
+  hands[player].push(draw_card(deck))
+end
+
 def shuffle_deck_if_needed(deck)
   if deck.size = 0
+    initialize_deck(deck)
     shuffle_deck(deck)
   end
 end
@@ -88,15 +97,20 @@ def card_value(card)
   when "Jack", "Queen", "King"
     10
   when "Ace"
-    [1,11]
+    11
   else
     card.to_i
   end
 end
 
 def calculate_hand(hands, player)
-  cards = hands[player.to_sym]
-  
+  cards = hands[player]
+  total = 0
+  cards.each do |card|
+    value = card_value(card[0])
+    total = total + value
+  end
+  total
 end
 
 def determine_winner(hands)
@@ -111,9 +125,16 @@ def clear_result(hand_result)
   # clear the result object
 end
 
-def player_loop
-  # game play of player
-  # getting input and evaluating hand
+def player_loop(hands, deck, hide_dealer)
+  loop do
+    display_cards(hands, hide_dealer)
+    choice = player_get_input
+    break if choice == "stick"
+    player_hit(hands, :player, deck)
+    result = calculate_hand(hands, :player)
+    break if result > 21
+  end
+  result
 end
 
 def computer_loop
@@ -132,4 +153,10 @@ end
 
 initialize_deck(current_deck)
 deck = shuffle_deck(current_deck)
+card = draw_card(deck)
+puts card
+binding.pry
+deal_initial_hands(deck, hands)
 display_cards(hands, hide_dealer)
+
+# player_loop(hands, deck, hide_dealer)

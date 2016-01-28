@@ -18,6 +18,10 @@ def prompt(message)
   puts "=> #{message}"
 end
 
+def clear_screen
+  system 'clear'
+end
+
 def display_cards(hands, hide_dealer)
   hands.each do |player, cards|
     puts("#{player.upcase}'S CARDS:")
@@ -61,7 +65,6 @@ def deal_initial_hands(deck, hands)
   [:Player, :Dealer].each do |player|
     hands[player] = []
     2.times do |t|
-      binding.pry
       hands[player] += [draw_card(deck)]
     end
   end
@@ -83,6 +86,7 @@ def computer_hit_stick(hand)
 end
 
 def player_get_input
+  input = ""
   loop do
     prompt("Hit or Stick")
     input = gets.chomp.downcase
@@ -92,7 +96,6 @@ def player_get_input
 end
 
 def card_value(card)
-  card = card[0]
   case card
   when "Jack", "Queen", "King"
     10
@@ -126,12 +129,13 @@ def clear_result(hand_result)
 end
 
 def player_loop(hands, deck, hide_dealer)
+  result = 0
   loop do
     display_cards(hands, hide_dealer)
     choice = player_get_input
     break if choice == "stick"
-    player_hit(hands, :player, deck)
-    result = calculate_hand(hands, :player)
+    player_hit(hands, :Player, deck)
+    result = calculate_hand(hands, :Player)
     break if result > 21
   end
   result
@@ -153,10 +157,7 @@ end
 
 initialize_deck(current_deck)
 deck = shuffle_deck(current_deck)
-card = draw_card(deck)
-puts card
-binding.pry
 deal_initial_hands(deck, hands)
-display_cards(hands, hide_dealer)
 
-# player_loop(hands, deck, hide_dealer)
+result = player_loop(hands, deck, hide_dealer)
+puts result

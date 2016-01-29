@@ -7,12 +7,6 @@ CARD_TYPES = ["2", "3", "4", "5", "6", "7", "8", "9", "10"] +
 SUITS = ["Hearts", "Clubs", "Diamonds", "Spades"]
 
 current_deck = []
-hide_dealer = true
-
-hands = {
-  # Darren: [["Ace", "Spades"], ["Jack", "Spades"]],
-  # Dealer: [["3", "Diamonds"], ["Queen", "Diamonds"]]
-}
 
 def prompt(message)
   puts "=> #{message}"
@@ -81,10 +75,6 @@ def shuffle_deck_if_needed(deck)
   end
 end
 
-def computer_hit_stick(hand)
-  # calculate if the computer should hit or stick
-end
-
 def player_get_input
   input = ""
   loop do
@@ -116,22 +106,18 @@ def calculate_hand(hands, player)
   total
 end
 
+def player_busted?(result)
+  true if result > 21
+end
+
 def determine_winner(hands)
   # evaluate the hands object to deterimine winner
 end
 
-def display_result
-  # display a result object
-end
-
-def clear_result(hand_result)
-  # clear the result object
-end
-
-def player_loop(hands, deck, hide_dealer)
-  result = 0
+def player_loop(hands, deck)
+  result = calculate_hand(hands, :Player)
   loop do
-    display_cards(hands, hide_dealer)
+    display_cards(hands, true)
     choice = player_get_input
     break if choice == "stick"
     player_hit(hands, :Player, deck)
@@ -141,23 +127,71 @@ def player_loop(hands, deck, hide_dealer)
   result
 end
 
-def computer_loop
-  # game play of computer/dealer
-  # evaluate hand - hit or stick
-  # draw card
+def dealer_loop(hands, deck)
+  result = 0
+  loop do
+    result = calculate_hand(hands, :Dealer)
+    break if result > 21 or result >= 17
+    player_hit(hands, :Dealer, deck)
+  end
+  result
 end
 
-def hand_op
-  # game loop until a hand is done
+def display_busted(player, result)
+  prompt("#{player} busted!")
+  prompt("Card total: #{result}")
+end
+
+def display_final_result(result_player, result_dealer)
+  prompt("Player score: #{result_player}")
+  prompt("Dealer score: #{result_dealer}")
+  if result_player > 21 && result_dealer > 21
+    prompt("Both players busted, no winner")
+  elsif result_player > 21
+    prompt("Player busted, Dealer wins")
+  elsif result_dealer > 21
+    prompt("Dealer busted, Player wins")
+  elsif result_player > result_dealer
+    prompt("Player wins")
+  else
+    prompt("Dealer wins")
+  end
+end
+
+def play_again?
+  prompt("Play again (y,n)")
+  gets.chomp.downcase[0]
 end
 
 def game_loop
-  # game loop until game is done
+  hands = {}
+  loop do
+    clear_screen
+    current_deck = []
+    hands = {}
+    initialize_deck(current_deck)
+    deck = shuffle_deck(current_deck)
+    deal_initial_hands(deck, hands)
+
+    result_player = player_loop(hands, deck)
+    if player_busted?(result_player)
+      display_busted("Player", result_player)
+    end
+
+    if result_player <= 21
+      result_dealer = dealer_loop(hands, deck)
+      if player_busted?(result_dealer)
+        display_busted("Dealer", result_dealer)
+      end
+    else
+      result_dealer = calculate_hand(hands, :Dealer)
+    end
+    
+    display_cards(hands, false)
+    display_final_result(result_player, result_dealer)
+
+    break if play_again? == 'n'
+  end
 end
 
-initialize_deck(current_deck)
-deck = shuffle_deck(current_deck)
-deal_initial_hands(deck, hands)
-
-result = player_loop(hands, deck, hide_dealer)
-puts result
+game_loop

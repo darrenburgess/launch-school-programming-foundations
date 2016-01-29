@@ -2,11 +2,9 @@
 
 require 'pry'
 
-CARD_TYPES = ["2", "3", "4", "5", "6", "7", "8", "9", "10"] + 
+CARD_TYPES = ["2", "3", "4", "5", "6", "7", "8", "9", "10"] +
              ["Jack", "Queen", "King", "Ace"]
-SUITS = ["Hearts", "Clubs", "Diamonds", "Spades"]
-
-current_deck = []
+SUITS = ["Hearts", "Clubs", "Diamonds", "Spades"].freeze
 
 def prompt(message)
   puts "=> #{message}"
@@ -23,9 +21,9 @@ def display_cards(hands, hide_dealer)
       if player == :Dealer && hide_dealer
         prompt("Hidden")
         hide_dealer = false
-      else  
-        card = card.join( " of " )
-        prompt("#{card}")
+      else
+        card = card.join(" of ")
+        prompt(card)
       end
     end
     puts("\n")
@@ -43,7 +41,7 @@ end
 def shuffle_deck(deck)
   size = deck.size
   new_deck = []
-  until size == 0 do
+  until size == 0
     selected_card = deck.delete_at(rand(0..(size - 1)))
     new_deck << selected_card
     size -= 1
@@ -58,7 +56,7 @@ end
 def deal_initial_hands(deck, hands)
   [:Player, :Dealer].each do |player|
     hands[player] = []
-    2.times do |t|
+    2.times do
       hands[player] += [draw_card(deck)]
     end
   end
@@ -66,13 +64,6 @@ end
 
 def player_hit(hands, player, deck)
   hands[player].push(draw_card(deck))
-end
-
-def shuffle_deck_if_needed(deck)
-  if deck.size = 0
-    initialize_deck(deck)
-    shuffle_deck(deck)
-  end
 end
 
 def player_get_input
@@ -101,7 +92,7 @@ def calculate_hand(hands, player)
   total = 0
   cards.each do |card|
     value = card_value(card[0])
-    total = total + value
+    total += value
   end
   total
 end
@@ -131,7 +122,7 @@ def dealer_loop(hands, deck)
   result = 0
   loop do
     result = calculate_hand(hands, :Dealer)
-    break if result > 21 or result >= 17
+    break if result > 21 || result >= 17
     player_hit(hands, :Dealer, deck)
   end
   result
@@ -163,35 +154,30 @@ def play_again?
   gets.chomp.downcase[0]
 end
 
-def game_loop
+loop do
+  clear_screen
+  current_deck = []
   hands = {}
-  loop do
-    clear_screen
-    current_deck = []
-    hands = {}
-    initialize_deck(current_deck)
-    deck = shuffle_deck(current_deck)
-    deal_initial_hands(deck, hands)
+  initialize_deck(current_deck)
+  deck = shuffle_deck(current_deck)
+  deal_initial_hands(deck, hands)
 
-    result_player = player_loop(hands, deck)
-    if player_busted?(result_player)
-      display_busted("Player", result_player)
-    end
-
-    if result_player <= 21
-      result_dealer = dealer_loop(hands, deck)
-      if player_busted?(result_dealer)
-        display_busted("Dealer", result_dealer)
-      end
-    else
-      result_dealer = calculate_hand(hands, :Dealer)
-    end
-    
-    display_cards(hands, false)
-    display_final_result(result_player, result_dealer)
-
-    break if play_again? == 'n'
+  result_player = player_loop(hands, deck)
+  if player_busted?(result_player)
+    display_busted("Player", result_player)
   end
-end
 
-game_loop
+  if result_player <= 21
+    result_dealer = dealer_loop(hands, deck)
+    if player_busted?(result_dealer)
+      display_busted("Dealer", result_dealer)
+    end
+  else
+    result_dealer = calculate_hand(hands, :Dealer)
+  end
+
+  display_cards(hands, false)
+  display_final_result(result_player, result_dealer)
+
+  break if play_again? == 'n'
+end

@@ -40,11 +40,11 @@ def draw_card(deck)
   deck.pop
 end
 
-def deal_initial_hands(deck,hands)
-    2.times do
-      player_hit(hands, :player, deck)
-      player_hit(hands, :dealer, deck)
-    end
+def deal_initial_hands(deck, hands)
+  2.times do
+    player_hit(hands, :player, deck)
+    player_hit(hands, :dealer, deck)
+  end
 end
 
 def player_hit(hands, player, deck)
@@ -80,7 +80,7 @@ def calculate_hand(hands, player)
     total += value
   end
   ace_value = cards.flatten.count("Ace") * 10
-  if total > HIGHEST_VALUE 
+  if total > HIGHEST_VALUE
     total -= ace_value
   else
     total
@@ -88,7 +88,7 @@ def calculate_hand(hands, player)
 end
 
 def player_busted?(result)
-  result > HIGHEST_VALUE 
+  result > HIGHEST_VALUE
 end
 
 def player_turn(hands, deck)
@@ -99,7 +99,7 @@ def player_turn(hands, deck)
     break if choice == "s"
     player_hit(hands, :player, deck)
     result = calculate_hand(hands, :player)
-    break if result > HIGHEST_VALUE 
+    break if result > HIGHEST_VALUE
   end
   result
 end
@@ -149,7 +149,7 @@ score = { dealer: 0, player: 0 }
 
 loop do
   clear_screen
-  hands = { :player => [], :dealer => []}
+  hands = { player: [], dealer: [] }
   deck = initialize_deck
   deal_initial_hands(deck, hands)
 

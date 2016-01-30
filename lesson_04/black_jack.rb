@@ -3,7 +3,7 @@
 require 'pry'
 
 CARD_TYPES = ["2", "3", "4", "5", "6", "7", "8", "9", "10"] +
-             ["Jack", "Queen", "King", "Ace"]
+             ["Jack", "Queen", "King", "Ace"].freeze
 SUITS = ["Hearts", "Clubs", "Diamonds", "Spades"].freeze
 
 def prompt(message)
@@ -11,14 +11,14 @@ def prompt(message)
 end
 
 def clear_screen
-  system 'clear'
+  system 'clear' or system 'cls'
 end
 
 def display_cards(hands, hide_dealer)
   hands.each do |player, cards|
     puts("#{player.upcase}'S CARDS:")
     cards.each do |card|
-      if player == :Dealer && hide_dealer
+      if player == :dealer && hide_dealer
         prompt("Hidden")
         hide_dealer = false
       else
@@ -38,13 +38,11 @@ def draw_card(deck)
   deck.pop
 end
 
-def deal_initial_hands(deck, hands)
-  [:Player, :Dealer].each do |player|
-    hands[player] = []
+def deal_initial_hands(deck,hands)
     2.times do
-      hands[player] += [draw_card(deck)]
+      player_hit(hands, :player, deck)
+      player_hit(hands, :dealer, deck)
     end
-  end
 end
 
 def player_hit(hands, player, deck)
@@ -54,9 +52,9 @@ end
 def player_get_input
   input = ""
   loop do
-    prompt("Hit or Stick")
+    prompt("(H)it or (S)tick")
     input = gets.chomp.downcase
-    break if %(hit stick).include? input
+    break if %w(hit stick).include? input
   end
   input
 end
@@ -79,36 +77,41 @@ def calculate_hand(hands, player)
     value = card_value(card[0])
     total += value
   end
-  total
+  ace_value = cards.flatten.count("Ace") * 10
+  if total > 21
+    total -= ace_value
+  else
+    total
+  end
 end
 
 def player_busted?(result)
-  true if result > 21
+  result > 21
 end
 
 def determine_winner(hands)
   # evaluate the hands object to deterimine winner
 end
 
-def player_loop(hands, deck)
-  result = calculate_hand(hands, :Player)
+def player_turn(hands, deck)
+  result = calculate_hand(hands, :player)
   loop do
     display_cards(hands, true)
     choice = player_get_input
-    break if choice == "stick"
-    player_hit(hands, :Player, deck)
-    result = calculate_hand(hands, :Player)
+    break if choice.downcase.start_with?("s")
+    player_hit(hands, :player, deck)
+    result = calculate_hand(hands, :player)
     break if result > 21
   end
   result
 end
 
-def dealer_loop(hands, deck)
+def dealer_turn(hands, deck)
   result = 0
   loop do
-    result = calculate_hand(hands, :Dealer)
+    result = calculate_hand(hands, :dealer)
     break if result > 21 || result >= 17
-    player_hit(hands, :Dealer, deck)
+    player_hit(hands, :dealer, deck)
   end
   result
 end
@@ -141,22 +144,22 @@ end
 
 loop do
   clear_screen
-  hands = {}
+  hands = { :player => [], :dealer => []}
   deck = initialize_deck
   deal_initial_hands(deck, hands)
 
-  result_player = player_loop(hands, deck)
+  result_player = player_turn(hands, deck)
   if player_busted?(result_player)
     display_busted("Player", result_player)
   end
 
   if result_player <= 21
-    result_dealer = dealer_loop(hands, deck)
+    result_dealer = dealer_turn(hands, deck)
     if player_busted?(result_dealer)
       display_busted("Dealer", result_dealer)
     end
   else
-    result_dealer = calculate_hand(hands, :Dealer)
+    result_dealer = calculate_hand(hands, :dealer)
   end
 
   display_cards(hands, false)

@@ -30,23 +30,8 @@ def display_cards(hands, hide_dealer)
   end
 end
 
-def initialize_deck(deck)
-  CARD_TYPES.each do |card_type|
-    SUITS.each do |suit|
-      deck << [card_type, suit]
-    end
-  end
-end
-
-def shuffle_deck(deck)
-  size = deck.size
-  new_deck = []
-  until size == 0
-    selected_card = deck.delete_at(rand(0..(size - 1)))
-    new_deck << selected_card
-    size -= 1
-  end
-  new_deck
+def initialize_deck
+  CARD_TYPES.product(SUITS).shuffle
 end
 
 def draw_card(deck)
@@ -158,8 +143,7 @@ loop do
   clear_screen
   current_deck = []
   hands = {}
-  initialize_deck(current_deck)
-  deck = shuffle_deck(current_deck)
+  deck = initialize_deck
   deal_initial_hands(deck, hands)
 
   result_player = player_loop(hands, deck)

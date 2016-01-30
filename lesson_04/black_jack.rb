@@ -18,7 +18,7 @@ end
 
 def display_cards(hands, hide_dealer)
   hands.each do |player, cards|
-    puts("#{player.upcase}'S CARDS:")
+    puts("\n#{player.upcase}'S CARDS:")
     cards.each do |card|
       if player == :dealer && hide_dealer
         prompt("Hidden")
@@ -154,9 +154,6 @@ loop do
   deal_initial_hands(deck, hands)
 
   result_player = player_turn(hands, deck)
-  if player_busted?(result_player)
-    display_busted("Player", result_player)
-  end
 
   if result_player <= HIGHEST_VALUE
     result_dealer = dealer_turn(hands, deck)

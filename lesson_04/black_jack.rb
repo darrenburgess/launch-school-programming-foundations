@@ -141,7 +141,6 @@ end
 
 loop do
   clear_screen
-  current_deck = []
   hands = {}
   deck = initialize_deck
   deal_initial_hands(deck, hands)

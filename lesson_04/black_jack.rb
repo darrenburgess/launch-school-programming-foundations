@@ -5,6 +5,8 @@ require 'pry'
 CARD_TYPES = ["2", "3", "4", "5", "6", "7", "8", "9", "10"] +
              ["Jack", "Queen", "King", "Ace"].freeze
 SUITS = ["Hearts", "Clubs", "Diamonds", "Spades"].freeze
+HIGHEST_VALUE = 21
+DEALER_STICKS = 17
 
 def prompt(message)
   puts "=> #{message}"
@@ -53,8 +55,8 @@ def player_get_input
   input = ""
   loop do
     prompt("(H)it or (S)tick")
-    input = gets.chomp.downcase
-    break if %w(hit stick).include? input
+    input = gets.chomp.downcase[0]
+    break if input == "h" || input == "s"
   end
   input
 end
@@ -78,7 +80,7 @@ def calculate_hand(hands, player)
     total += value
   end
   ace_value = cards.flatten.count("Ace") * 10
-  if total > 21
+  if total > HIGHEST_VALUE 
     total -= ace_value
   else
     total
@@ -86,11 +88,7 @@ def calculate_hand(hands, player)
 end
 
 def player_busted?(result)
-  result > 21
-end
-
-def determine_winner(hands)
-  # evaluate the hands object to deterimine winner
+  result > HIGHEST_VALUE 
 end
 
 def player_turn(hands, deck)
@@ -98,10 +96,10 @@ def player_turn(hands, deck)
   loop do
     display_cards(hands, true)
     choice = player_get_input
-    break if choice.downcase.start_with?("s")
+    break if choice == "s"
     player_hit(hands, :player, deck)
     result = calculate_hand(hands, :player)
-    break if result > 21
+    break if result > HIGHEST_VALUE 
   end
   result
 end
@@ -110,7 +108,7 @@ def dealer_turn(hands, deck)
   result = 0
   loop do
     result = calculate_hand(hands, :dealer)
-    break if result > 21 || result >= 17
+    break if result > HIGHEST_VALUE || result >= DEALER_STICKS
     player_hit(hands, :dealer, deck)
   end
   result
@@ -118,29 +116,36 @@ end
 
 def display_busted(player, result)
   prompt("#{player} busted!")
-  prompt("Card total: #{result}")
+  prompt("Card total: #{result}\n")
 end
 
-def display_final_result(result_player, result_dealer)
+def display_final_result(result_player, result_dealer, score)
   prompt("Player score: #{result_player}")
   prompt("Dealer score: #{result_dealer}")
-  if result_player > 21 && result_dealer > 21
+  if result_player > HIGHEST_VALUE && result_dealer > HIGHEST_VALUE
     prompt("Both players busted, no winner")
-  elsif result_player > 21
+  elsif result_player > HIGHEST_VALUE
     prompt("Player busted, Dealer wins")
-  elsif result_dealer > 21
+    score[:dealer] += 1
+  elsif result_dealer > HIGHEST_VALUE
     prompt("Dealer busted, Player wins")
+    score[:player] += 1
   elsif result_player > result_dealer
     prompt("Player wins")
+    score[:player] += 1
   else
     prompt("Dealer wins")
+    score[:dealer] += 1
   end
+  prompt("Player: #{score[:player]}. Dealer: #{score[:dealer]}")
 end
 
 def play_again?
   prompt("Play again (y,n)")
   gets.chomp.downcase[0]
 end
+
+score = { dealer: 0, player: 0 }
 
 loop do
   clear_screen
@@ -153,7 +158,7 @@ loop do
     display_busted("Player", result_player)
   end
 
-  if result_player <= 21
+  if result_player <= HIGHEST_VALUE
     result_dealer = dealer_turn(hands, deck)
     if player_busted?(result_dealer)
       display_busted("Dealer", result_dealer)
@@ -163,7 +168,7 @@ loop do
   end
 
   display_cards(hands, false)
-  display_final_result(result_player, result_dealer)
+  display_final_result(result_player, result_dealer, score)
 
   break if play_again? == 'n'
 end

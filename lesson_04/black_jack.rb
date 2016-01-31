@@ -6,7 +6,7 @@ CARD_TYPES = ["2", "3", "4", "5", "6", "7", "8", "9", "10"] +
              ["Jack", "Queen", "King", "Ace"].freeze
 SUITS = ["Hearts", "Clubs", "Diamonds", "Spades"].freeze
 HIGHEST_VALUE = 21
-DEALER_STICKS = 17
+DEALER_STICKS = 17 
 
 def prompt(message)
   puts "=> #{message}"
@@ -99,7 +99,7 @@ def player_turn(hands, deck)
     break if choice == "s"
     player_hit(hands, :player, deck)
     result = calculate_hand(hands, :player)
-    break if result > HIGHEST_VALUE
+    break if player_busted?(result) 
   end
   result
 end
@@ -122,9 +122,7 @@ end
 def display_final_result(result_player, result_dealer, score)
   prompt("Player score: #{result_player}")
   prompt("Dealer score: #{result_dealer}")
-  if result_player > HIGHEST_VALUE && result_dealer > HIGHEST_VALUE
-    prompt("Both players busted, no winner")
-  elsif result_player > HIGHEST_VALUE
+  if result_player > HIGHEST_VALUE
     prompt("Player busted, Dealer wins")
     score[:dealer] += 1
   elsif result_dealer > HIGHEST_VALUE
@@ -152,7 +150,6 @@ loop do
   hands = { player: [], dealer: [] }
   deck = initialize_deck
   deal_initial_hands(deck, hands)
-
   result_player = player_turn(hands, deck)
 
   if result_player <= HIGHEST_VALUE

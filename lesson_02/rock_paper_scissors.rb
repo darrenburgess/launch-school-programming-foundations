@@ -3,26 +3,20 @@
 # http://umop.com/rps.htm
 # http://readysteadycode.com/howto-scrape-websites-with-ruby-and-mechanize
 
-GAME_RULES = {
-  rock: {
-    scissors: 'crushes',
-    lizard: 'crushes' },
-  paper: {
-    rock: 'covers',
-    spock: 'disproves' },
-  scissors: {
-    paper: 'cuts',
-    lizard: 'decapitates' },
-  lizard: {
-    paper: 'eats',
-    spock: 'poisons' },
-  spock: {
-    rock: 'vaporizes',
-    scissors: 'smashes'
-  }
-}.freeze
+require './rps_rules.rb'
+require 'pry'
 
-VALID_CHOICES = GAME_RULES.keys.map(&:to_s)
+GAME_TYPE_CHOICES = GAME_RULES.keys.map(&:to_s)
+
+def get_user_game_choice
+  choice = ""
+  loop do
+    prompt "Choose from the following RPS games: #{GAME_TYPE_CHOICES}"
+    choice = gets.chomp
+    break if GAME_TYPE_CHOICES.include?(choice)
+  end
+  choice
+end
 
 def prompt(message)
   puts "=> #{message}"
@@ -53,7 +47,7 @@ def pause_play
 end
 
 def win?(first, second)
-  GAME_RULES[first.to_sym][second.to_sym]
+  RULES[first.to_sym][second.to_sym]
 end
 
 def determine_winner(player, computer)
@@ -67,6 +61,11 @@ def determine_winner(player, computer)
 end
 
 clear_screen
+
+game_type = get_user_game_choice
+VALID_CHOICES = GAME_RULES[game_type].keys.map(&:to_s)
+RULES = GAME_RULES[game_type]
+
 prompt("Welcome to #{list_choices}. You know what to do!")
 
 loop do

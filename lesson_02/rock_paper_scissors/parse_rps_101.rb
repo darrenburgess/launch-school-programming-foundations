@@ -33,4 +33,4 @@ gestures.each do |gesture|
   end
 end
 
-pp rules
+puts rules
